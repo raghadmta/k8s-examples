@@ -10,7 +10,7 @@ spec:
     metadata:
       name: my-first-pod
       labels:
-        app: myFirstPod
+        app: nginx
         type: frontend
     spec:
       containers:
