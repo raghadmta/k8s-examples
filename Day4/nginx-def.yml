@@ -16,7 +16,7 @@ spec:
       volumes:
         - name: nginx-vol
           persistentVolumeCliam:
-            clainName: lab-pvc
+            claimName: lab-pvc
       containers:
         - name: nginx
           image: nginx
