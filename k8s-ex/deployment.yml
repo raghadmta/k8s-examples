@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: nginx-container
-          image: nginx:stable #nginx:alpine 
+          image: nginx:alpine 
   replicas: 3
   selector:
     matchLabels:
