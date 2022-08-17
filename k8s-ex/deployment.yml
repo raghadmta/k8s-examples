@@ -14,8 +14,8 @@ spec:
         type: frontend
     spec:
       containers:
-        - name: nginx-deploy
-          image: nginx:alpine
+        - name: nginx-container
+          image: nginx:stable #nginx:alpine 
   replicas: 3
   selector:
     matchLabels:
