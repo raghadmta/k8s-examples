@@ -21,4 +21,4 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      type: frontend
+      type: frontend 
