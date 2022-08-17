@@ -8,7 +8,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: nginx-deploy
+      name: nginx-spec
       labels:
         app: web
         type: frontend
