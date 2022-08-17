@@ -13,13 +13,13 @@ spec:
         app: myFirstPod
         type: frontend
     spec:
-      volumes:
-        - name: nginx-vol
-          persistentVolumeCliam:
-            claimName: lab-pvc
       containers:
         - name: nginx
           image: nginx
+      volumes:
+        - name: nginx-vol
+          persistentVolumeClaim:
+            claimName: lab-pvc
   replicas: 5
   selector:
     matchLabels:
