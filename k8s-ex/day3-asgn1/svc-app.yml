@@ -1,4 +1,4 @@
-piVersion: v1
+appiVersion: v1
 kind: Service
 metadata:
   name: nginx-svc
