@@ -1,0 +1,16 @@
+piVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  labels:
+   app: nginx-service
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80 
+      targetPort: 80 
+      nodePort: 31089 
+      protocol: TCP
+selector:
+  app: nginx
