@@ -19,7 +19,7 @@ spec:
       volumes:
         - name: nginx-vol
           persistentVolumeClaim:
-            claimName: lab-pvc
+            claimName: lab-pvc # what volume you want
   replicas: 5
   selector:
     matchLabels:
