@@ -1,0 +1,231 @@
+# redis
+--- 
+apiVersion: v1
+kind: Service
+metadata: 
+  labels: 
+    app: redis
+  name: redis
+  namespace: eks-voting-app
+spec: 
+  clusterIP: None
+  ports:
+  - name: redis-service
+    port: 6379
+    targetPort: 6379
+  selector: 
+    app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: eks-voting-app
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+          name: redis
+
+# db
+--- 
+apiVersion: v1
+kind: Service
+metadata: 
+  labels: 
+    app: db
+  name: db
+  namespace: eks-voting-app
+
+spec: 
+  clusterIP: None
+  ports: 
+  - name: db
+    port: 5432
+    targetPort: 5432
+  selector: 
+    app: db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: eks-voting-app
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: postgres:9.4
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        ports:
+        - containerPort: 5432
+          name: db
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: postgres-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  namespace: eks-voting-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+# result
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: result
+  namespace: eks-voting-app
+  labels:
+    app: result
+spec:
+  ports:
+  - port: 5001
+    targetPort: 80
+    protocol: TCP
+    name: result-service
+  type: LoadBalancer
+  selector:
+    app: result
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result
+  namespace: eks-voting-app
+  labels:
+    app: result
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: result
+  template:
+    metadata:
+      labels:
+        app: result
+    spec:
+      containers:
+      - name: result
+        image: dockersamples/examplevotingapp_result:before
+        ports:
+        - containerPort: 80
+          name: result
+
+# vote
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vote
+  namespace: eks-voting-app
+  labels:
+    apps: vote
+spec: 
+  ports:
+    - port: 5000
+      targetPort: 80
+      protocol: TCP
+      name: vote-service
+  type: LoadBalancer
+  selector:
+    app: vote
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote
+  namespace: eks-voting-app
+  labels:
+    app: vote
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vote
+  template:
+    metadata:
+      labels:
+        app: vote
+    spec:
+      containers:
+      - name: vote
+        image: dockersamples/examplevotingapp_vote:before
+        ports:
+        - containerPort: 80
+          name: vote
+
+# worker
+--- 
+apiVersion: v1
+kind: Service
+metadata: 
+  labels: 
+    apps: worker
+  name: worker
+  namespace: eks-voting-app
+spec: 
+  clusterIP: None
+  selector: 
+    app: worker
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  labels: 
+    app: worker
+  name: worker
+  namespace: eks-voting-app
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template: 
+    metadata: 
+      labels: 
+        app: worker
+    spec: 
+      containers: 
+      - image: dockersamples/examplevotingapp_worker
+        name: worker
